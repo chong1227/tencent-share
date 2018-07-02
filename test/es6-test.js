@@ -1,4 +1,3 @@
-import Share from '../dist/bundle';
+import Share from 'tencent-share';
 
 Share.setShareInfo(shareData);
-Share.setShareInWx(shareData, 'friends');

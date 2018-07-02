@@ -7,7 +7,7 @@
 使用方式：  
 
 ```javascript
-import Share from '../dist/bundle';
+import Share from 'tencent-share';
 
 // 分享信息
 var shareData = {
