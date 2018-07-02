@@ -1,6 +1,6 @@
 {
   "name": "tencent-share",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "该模块集成了微信、QQ、腾讯新闻客户端、腾讯视频客户端的分享API，可以设置分享的标题、描述、图片和链接",
   "main": "dist/bundle.js",
   "keywords": ["腾讯", "分享"],
