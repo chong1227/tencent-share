@@ -40,3 +40,15 @@ Share.setShareInWx(shareData, 'friends');
 * qzone : 分享到QQ空间
 
 如果没有分别设置分享信息的需求，直接调用`Share.setShareInfo(shareData);`即可。
+
+在*新闻客户端*内设置分享信息后，还可以调用`show()`方法来主动呼起分享面板： 
+
+```javascript
+Share.show(); // 该方法只在新闻客户度内有效
+```
+
+同时，还可以在 *Android版的新闻客户端* 内，禁止该页面的分享功能： 
+
+```javascript
+Share.forbidShareInNews();
+```

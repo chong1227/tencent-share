@@ -62,23 +62,6 @@ const os = (function(){
 })();
 
 const Share = {
-    show(){
-        if( window.TencentNews ){
-            // 小于5.5.40版本
-            // log( os.qqnews_version );
-            if( os.qqnews_version<505.04 && !os.android ){
-                if( TencentNews.shareFromWebView ){
-                    window.TencentNews.shareFromWebView(shareData.title, shareData.title, shareData
-                        .desc, shareData.link,
-                        shareData.img);
-                }
-            }else{
-                if( window.TencentNews.showActionMenu ){
-                    TencentNews.showActionMenu();
-                }
-            }
-        }
-    },
     setShareInfo(shareData){
         if( os.qqnews ){
             this.setShareInNews(shareData);
@@ -91,49 +74,91 @@ const Share = {
         }
     },
 
-    initer: false,
-
-    setShareInNews(shareData){
-        let self = this,
-            newsappShare = ()=>{
-            if( window.TencentNews ){
-                if(!self.initer){
-                    self.initer = true;
-                    if( TencentNews.enableSingleH5Share ){
-                        TencentNews.enableSingleH5Share(1);
-                    }
-                }
-                if ( window.TencentNews.setShareArticleInfo) {
-                    window.TencentNews.setShareArticleInfo(shareData.title, shareData.title,
-                        shareData.desc, shareData.link,
-                        shareData.img);
-                } else {
-                    window.TencentNews.shareFromWebView(shareData.title, shareData.title, shareData
-                        .desc, shareData.link,
-                        shareData.img);
-                }
-            }
-        },init=()=>{
+    // 新闻客户端内的回调
+    // iOS客户端提供的 JS API 由客户端注入。页面无需引入或主动加载这些JS文件，客户端会在合适的时机将 JS API 注入到页面中供页面使用
+    // iOS客户端里，由于页面执行 客户端注入js 和 页面js 的顺序无法保证，需要在使用 window.TencentNews 对象前，确保客户端提供的 JS API已经处于ready状态
+    // Android客户端需要先加载jsapi才能使用 window.TencentNews 这个全局变量
+    newsCallback(callback=()=>{}){
+        let init=()=>{
             if(window.TencentNews || window.TencentReading){
-                newsappShare();
+                callback();
             }else{
                 document.addEventListener('TencentNewsJSInjectionComplete', function(){
-                    newsappShare();
+                    callback();
                 })
                 document.addEventListener('TencentNewsReady', function(){
-                    newsappShare();
+                    callback();
                 });
             }
         }
 
-        if( os.android && !document.querySelector('#newsjs') ){
-            // Android下需要先加载js文件
-            getScript('//mat1.gtimg.com/www/js/newsapp/jsapi/news.js?_tsid=1', ()=>{
-                init();
-            }, 'newsjs');
+        if( window.TencentNews || window.TencentReading ){
+            callback();
         }else{
-            init();
+            if( os.android ){
+                // Android下需要先加载js文件
+                getScript('//mat1.gtimg.com/www/js/newsapp/jsapi/news.js?_tsid=1', ()=>{
+                    init();
+                }, 'newsjs');
+            }else{
+                init();
+            }
         }
+    },
+
+    // 在新闻客户端中呼起分享面板
+    // 请在设置分享后再调用该方法
+    newsData:{},
+    show(){
+        this.newsCallback(function(){
+            // 小于5.5.40版本
+            // log( os.qqnews_version );
+            if( os.qqnews_version<505.04 && !os.android ){
+                if( TencentNews.shareFromWebView ){
+                    window.TencentNews.shareFromWebView(this.newsData.title, this.newsData.title, this.newsData
+                        .desc, this.newsData.link,
+                        this.newsData.img);
+                }
+            }else{
+                if( window.TencentNews.showActionMenu ){
+                    TencentNews.showActionMenu();
+                }
+            }
+        })
+    },
+    setShareInNews(shareData){
+        let self = this,
+            newsappShare = ()=>{
+                if( window.TencentNews ){
+                    if(!self.initer){
+                        self.initer = true;
+                        if( TencentNews.enableSingleH5Share ){
+                            TencentNews.enableSingleH5Share(1);
+                        }
+                    }
+                    self.newsData = shareData;
+                    if ( window.TencentNews.setShareArticleInfo) {
+                        window.TencentNews.setShareArticleInfo(shareData.title, shareData.title,
+                            shareData.desc, shareData.link,
+                            shareData.img);
+                    } else {
+                        window.TencentNews.shareFromWebView(shareData.title, shareData.title, shareData
+                            .desc, shareData.link,
+                            shareData.img);
+                    }
+                }
+            };
+
+        this.newsCallback(newsappShare);
+    },
+
+    // 新闻客户端禁止当前页面的分享，目前只在android下有效
+    forbidShareInNews(){
+        this.newsCallback(function(){
+            if( TencentNews.setActionBtn ){
+                TencentNews.setActionBtn("0");
+            }
+        });
     },
 
     setShareInWx(shareData, type){
