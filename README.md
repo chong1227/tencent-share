@@ -4,7 +4,9 @@
 
 请注意： 当前功能只能在`*.qq.com`域名的网页中使用，其他域名调用当前模块是没有效果的。
 
-使用方式：  
+> 从`0.1.0`到`1.0.0`进行了较大版本的更新，必须使用`new`关键创建实例，然后使用实例调用相关的方法，同时可以监听微信的分享事件。
+
+### 1. 使用方式  
 
 ```javascript
 import Share from 'tencent-share';
@@ -17,9 +19,14 @@ var shareData = {
     link: window.location.href
 };
 
-Share.setShareInfo(shareData);
-Share.setShareInWx(shareData, 'friends');
+const share = new Share(shareData);
+share.setShareInfo(shareData)
+    .on('share', data=>console.log('share', data)) // 监听分享事件
+    .on('success', data=>console.log('success', data)) // 监听分享成功事件
+    .on('cancel', data=>console.log('cancel', data)) // 监听取消分享的事件
 ```
+
+### 2. setShareInfo
 
 `setShareInfo`为总方法，调用该方法后，开发者无需关心当前处于什么环境，模块会自动根据UA设置微信、QQ、腾讯新闻客户端、腾讯视频客户端的分享信息。
 
@@ -39,16 +46,16 @@ Share.setShareInWx(shareData, 'friends');
 * qq : 分享给QQ好友
 * qzone : 分享到QQ空间
 
-如果没有分别设置分享信息的需求，直接调用`Share.setShareInfo(shareData);`即可。
+### 3. 呼起分享面板
 
 在*新闻客户端*内设置分享信息后，还可以调用`show()`方法来主动呼起分享面板： 
 
 ```javascript
-Share.show(); // 该方法只在新闻客户度内有效
+share.show(); // 该方法只在新闻客户度内有效
 ```
 
 同时，还可以在 *Android版的新闻客户端* 内，禁止该页面的分享功能： 
 
 ```javascript
-Share.forbidShareInNews();
+share.forbidShare();
 ```

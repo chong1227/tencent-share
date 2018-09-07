@@ -1,9 +1,12 @@
 {
   "name": "tencent-share",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "该模块集成了微信、QQ、腾讯新闻客户端、腾讯视频客户端的分享API，可以设置分享的标题、描述、图片和链接",
   "main": "dist/bundle.js",
-  "keywords": ["腾讯", "分享"],
+  "keywords": [
+    "腾讯",
+    "分享"
+  ],
   "repository": "https://github.com/wenzi0github/tencent-share.git",
   "files": [
     "src",
@@ -20,11 +23,17 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "rollup-plugin-babel": "^3.0.5",
+    "rollup-plugin-commonjs": "^9.1.4",
+    "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^3.3.0",
     "webpack": "^4.12.2",
     "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0"
   }
 }
